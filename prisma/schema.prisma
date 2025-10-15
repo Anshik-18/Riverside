@@ -19,5 +19,41 @@ model User{
   email    String @unique
   Password String?
   provider String? 
+  studios        StudioSession[]
   
+}
+
+
+
+model Recording {
+  id          String   @id @default(cuid())
+  fileUrl     String
+  trackType   String   // e.g. "audio", "video"
+  participant String   // "host" or "guest"
+  createdAt   DateTime @default(now())
+  sessionId   String
+  session     StudioSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+
+
+// Example for your recording sessions (will use later)
+model StudioSession {
+  id          String   @id @default(cuid())
+  title       String
+  createdAt   DateTime @default(now())
+  hostId      String
+  tracktype    String   // e.g. "audio", "video"
+  host        User     @relation(fields: [hostId], references: [id], onDelete: Cascade)
+  guests      Guest[]
+  recordings  Recording[]
+}
+model Guest {
+  id         String   @id @default(cuid())
+  name       String?
+  email      String?
+  inviteLink String   @unique
+  joinedAt   DateTime?
+  sessionId  String
+  session    StudioSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
